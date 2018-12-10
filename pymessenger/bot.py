@@ -302,3 +302,37 @@ class Bot:
     def _send_payload(self, payload):
         """ Deprecated, use send_raw instead """
         return self.send_raw(payload)
+    
+    def send_quick_replies(self, recipient_id,quickreplies,text='' , notification_type=NotificationType.regular):
+        
+        return self.send_message(recipient_id,{"text": text, "quick_replies":quickreplies},notification_type)
+    
+    def send_handover_row(self,payload,handover_command):
+        
+        request_endpoint = '{0}/me/{1}'.format(self.graph_url,handover_command.value)
+        response = requests.post(
+            request_endpoint,
+            params=self.auth_args,
+            json=payload
+        )
+        result = response.json()
+        return result
+    def send_handover_recipient(self,recipient,payload,handover_command):
+        payload["recipient"]={"id":recipient}
+        return self.send_handover_row(payload,handover_command)
+    def send_passcontrolthread_handover_command(self,recipient,app_id,messege=""):
+        payload={
+            "target_app_id":app_id,
+            "metadata":messege
+        }
+        handover_command=HandoverCommand.pass_thread_control
+        return self.send_handover_recipient(recipient,payload,handover_command)
+    def send_takecontrolthread_handover_command(self,recipient,messege=""):
+        payload={"metadata":messege}
+        handover_command=HandoverCommand.take_thread_control
+        return self.send_handover_recipient(recipient,payload,handover_command)
+        
+class HandoverCommand(Enum):
+    pass_thread_control = "pass_thread_control"
+    take_thread_control = "take_thread_control"
+
