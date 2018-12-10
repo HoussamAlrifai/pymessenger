@@ -134,6 +134,7 @@ class Bot:
                 "type": "template",
                 "payload": {
                     "template_type": "generic",
+                    "image_aspect_ratio":"square"
                     "elements": elements
                 }
             }
